@@ -298,4 +298,5 @@ const WebcamComponent = (props: any) => {
       </div>
     </div>
   );
+}
 export default WebcamComponent;
