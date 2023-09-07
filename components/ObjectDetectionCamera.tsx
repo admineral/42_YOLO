@@ -16,6 +16,7 @@ const WebcamComponent = (props: any) => {
 
   const [facingMode, setFacingMode] = useState<string>("environment");
   const originalSize = useRef<number[]>([0, 0]);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // New function for handling video upload
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,11 +140,10 @@ const WebcamComponent = (props: any) => {
     cv.height = h;
   };
   useEffect(() => {
-    const video = document.getElementById("uploaded-video") as HTMLVideoElement;
-    if (video) {
-      video.playbackRate = playbackRate;
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate;
     }
-  }, [playbackRate]);
+  }, [playbackRate, videoFile]);
   // close camera when browser tab is minimized
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -172,10 +172,10 @@ const WebcamComponent = (props: any) => {
       >
         {/* Conditionally render uploaded video or Webcam component */}
         {videoFile ? (
-          <video id="uploaded-video" controls autoPlay muted style={{ width: '400px' }} playbackRate={playbackRate}>
-          <source src={URL.createObjectURL(videoFile)} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+          <video ref={videoRef} id="uploaded-video" controls autoPlay muted style={{ width: '400px' }}>
+            <source src={URL.createObjectURL(videoFile)} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         ) : (
           <Webcam
             mirrored={facingMode === "user"}
@@ -241,11 +241,11 @@ const WebcamComponent = (props: any) => {
               Live Detection
             </button>
             <button
-    onClick={() => setPlaybackRate(prevRate => prevRate / 2)}
-    className="p-2 border-dashed border-2 rounded-xl hover:translate-y-1"
-  >
-    Slow Down Video
-  </button>
+              onClick={() => setPlaybackRate(prevRate => prevRate / 2)}
+              className="p-2 border-dashed border-2 rounded-xl hover:translate-y-1"
+            >
+              Slow Down Video
+            </button>
           </div>
           <div className="flex gap-1 justify-center items-center items-stretch">
             <button
@@ -298,6 +298,4 @@ const WebcamComponent = (props: any) => {
       </div>
     </div>
   );
-};
-
 export default WebcamComponent;
